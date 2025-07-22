@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52923989994",
+    "project_id": "teamtournamentid",
+    "storage_bucket": "teamtournamentid.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52923989994:android:acd3802a09ecedc918fc93",
+        "android_client_info": {
+          "package_name": "com.example.teamtournament"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-sYy86P-vOYqn31IW96LLM6NhBkEk_rc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
