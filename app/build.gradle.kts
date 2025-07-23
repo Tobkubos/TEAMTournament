@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.teamtournament"
+    namespace = "com.tobiaszkubiak.teamtournament"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.teamtournament"
+        applicationId = "com.tobiaszkubiak.teamtournament"
         minSdk = 24
         targetSdk = 35
         versionCode = 1
@@ -62,4 +62,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.navigation.compose)
 }
