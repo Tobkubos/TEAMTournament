@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.tobiaszkubiak.teamtournament.data.UserProfile
 import com.tobiaszkubiak.teamtournament.data.datasources.UserDataSource
 import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
 import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
@@ -22,11 +23,11 @@ fun ProfileScreen(
     val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
     val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
 
-    val user by viewModel.currentUser.collectAsState()
+    val userProfile by viewModel.currentUserProfile.collectAsState()
 
     LaunchedEffect(Unit) {
-        if (user == null) {
-            viewModel.loadCurrentUser()
+        if (userProfile == null) {
+            viewModel.loadCurrentUserProfile()
         }
     }
 
@@ -35,13 +36,13 @@ fun ProfileScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        if (user != null) {
+        if (userProfile != null) {
             Text("Profil Użytkownika", style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(24.dp))
 
-            ProfileInfoRow("Imię:", user!!.firstName)
-            ProfileInfoRow("Nazwisko:", user!!.lastName)
-            ProfileInfoRow("Telefon:", user!!.phone)
+            ProfileInfoRow("Imię:", userProfile!!.user.firstName)
+            ProfileInfoRow("Nazwisko:", userProfile!!.user.lastName)
+            ProfileInfoRow("Telefon:", userProfile!!.user.phone)
 
             Spacer(modifier = Modifier.height(32.dp))
 

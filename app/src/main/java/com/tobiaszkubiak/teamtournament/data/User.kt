@@ -1,9 +1,6 @@
 package com.tobiaszkubiak.teamtournament.data
 
-data class UserProfile(
-    val user: User,
-    val stats: UserStatistics
-)
+import com.google.firebase.firestore.DocumentId
 
 data class User(
     val uid: String = "",

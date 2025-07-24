@@ -2,6 +2,7 @@ package com.tobiaszkubiak.teamtournament.data
 
 import com.google.firebase.firestore.DocumentId
 
+
 data class UserStatistics (
     @DocumentId
     val uid: String = "",

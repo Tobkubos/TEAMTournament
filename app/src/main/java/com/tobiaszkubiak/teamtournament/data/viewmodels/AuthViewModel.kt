@@ -3,7 +3,10 @@ package com.tobiaszkubiak.teamtournament.data.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.tobiaszkubiak.teamtournament.data.User
+import com.tobiaszkubiak.teamtournament.data.UserProfile
 import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,8 +20,11 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
     private val _loginState = MutableStateFlow<AuthState>(AuthState.Idle)
     val loginState: StateFlow<AuthState> = _loginState
 
-    private val _currentUser = MutableStateFlow<User?>(null)
-    val currentUser: StateFlow<User?> = _currentUser
+    //private val _currentUser = MutableStateFlow<User?>(null)
+    //val currentUser: StateFlow<User?> = _currentUser
+
+    private val _currentUserProfile = MutableStateFlow<UserProfile?>(null)
+    val currentUserProfile: StateFlow<UserProfile?> = _currentUserProfile
 
     fun registerUser(
         firstName: String, lastName: String, phone: String, email: String, password: String
@@ -38,7 +44,7 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
             _loginState.value = AuthState.Loading
             try {
                 userRepository.loginUser(email, password)
-                loadCurrentUser()
+                loadCurrentUserProfile()
                 _loginState.value = AuthState.Success
             } catch (e: Exception) {
                 _loginState.value = AuthState.Error(e.message ?: "Błąd logowania")
@@ -46,15 +52,18 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         }
     }
 
-    fun loadCurrentUser() {
-        viewModelScope.launch {
-            _currentUser.value = userRepository.getUserData()
+    fun loadCurrentUserProfile() {
+        val user = Firebase.auth.currentUser
+        if (user != null) {
+            viewModelScope.launch {
+                _currentUserProfile.value = userRepository.getUserProfile()
+            }
         }
     }
 
     fun logout() {
         userRepository.logout()
-        _currentUser.value = null
+        _currentUserProfile.value = null
         _loginState.value = AuthState.Idle
     }
 }
