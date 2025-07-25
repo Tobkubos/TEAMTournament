@@ -2,6 +2,7 @@ package com.tobiaszkubiak.teamtournament.data.datasources
 
 import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -29,7 +30,7 @@ class GroupDataSource {
         val groupDocument = firestore.collection("groups").add(newGroup).await()
         val newGroupId = groupDocument.id
 
-        val userDataRef = firestore.collection("user_data").document(currentUser.uid)
+        val userDataRef = firestore.collection("user_statistics").document(currentUser.uid)
         userDataRef.update("memberOfGroupIds", FieldValue.arrayUnion(newGroupId)).await()
     }
 
@@ -76,5 +77,23 @@ class GroupDataSource {
         )
 
         groupRef.update(updates).await()
+    }
+
+
+    suspend fun getGroupsByIds(groupIds: List<String>): List<Group> {
+        if (groupIds.isEmpty()) {
+            return emptyList()
+        }
+
+        try {
+            val groupsSnapshot = firestore.collection("groups")
+                .whereIn(FieldPath.documentId(), groupIds.take(30))
+                .get()
+                .await()
+
+            return groupsSnapshot.toObjects(Group::class.java)
+        } catch (e: Exception) {
+            return emptyList()
+        }
     }
 }

@@ -32,13 +32,9 @@ import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
 
 @Composable
 fun RegisterScreen(
+    viewModel: AuthViewModel,
+    onRegisterSuccess: () -> Unit
 ) {
-    val dataSource = remember { UserDataSource() }
-    val userRepository = remember { UserRepository(dataSource) }
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
-    val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
-    // ---------------------------------------------------------------------------
-
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
@@ -139,6 +135,7 @@ fun RegisterScreen(
         when (val state = registrationState) {
             is AuthState.Success -> {
                 Toast.makeText(context, "Rejestracja pomyślna!", Toast.LENGTH_LONG).show()
+                onRegisterSuccess()
             }
             is AuthState.Error -> {
                 Toast.makeText(context, "Błąd: ${state.message}", Toast.LENGTH_LONG).show()

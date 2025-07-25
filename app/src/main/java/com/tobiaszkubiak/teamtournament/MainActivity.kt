@@ -4,21 +4,16 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -32,10 +27,15 @@ import com.tobiaszkubiak.teamtournament.ui.theme.panels.SettingsScreen
 import com.tobiaszkubiak.teamtournament.ui.theme.panels.InformationScreen
 import com.tobiaszkubiak.teamtournament.ui.theme.TEAMTournamentTheme
 
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
+import com.tobiaszkubiak.teamtournament.data.datasources.GroupDataSource
+import com.tobiaszkubiak.teamtournament.data.datasources.UserDataSource
+import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
+import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
+import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
+import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
 import com.tobiaszkubiak.teamtournament.ui.controllers.Screen
 import com.tobiaszkubiak.teamtournament.ui.customElements.BottomNavigation
+import com.tobiaszkubiak.teamtournament.ui.theme.panels.GroupCreationScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,6 +56,16 @@ fun MainApp(){
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+
+    val userDataSource = remember { UserDataSource() }
+    val groupDataSource = remember { GroupDataSource() }
+
+    val userRepository = remember { UserRepository(userDataSource) }
+    val groupRepository = remember { GroupRepository(groupDataSource) }
+
+    val viewModelFactory = remember { AuthViewModelFactory(userRepository,groupRepository) }
+    val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
+
     Scaffold(
         bottomBar = {
             if (currentRoute == Screen.Tournaments.route ||
@@ -69,14 +79,22 @@ fun MainApp(){
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Tournaments.route,
+            startDestination = Screen.Login.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Screen.Tournaments.route) {
-                TournamentsScreen()
+                TournamentsScreen(
+                    onNavigateToGroupCreation = { navController.navigate(Screen.GroupCreationForm.route) }
+                )
+            }
+            composable(route = Screen.GroupCreationForm.route) {
+                GroupCreationScreen(
+                    onGroupCreated = { navController.popBackStack() },
+                    onGroupCreationCancel = {navController.popBackStack()}
+                )
             }
             composable(route = Screen.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(viewModel = authViewModel)
             }
             composable(route = Screen.Settings.route) {
                 SettingsScreen()
@@ -86,12 +104,16 @@ fun MainApp(){
             }
             composable(route = Screen.Login.route) {
                 LoginScreen(
+                    viewModel = authViewModel,
                     onLoginSuccess = { navController.navigate(Screen.Tournaments.route)},
                     onNavigateToRegister = { navController.navigate(Screen.Register.route)}
                 )
             }
             composable(route = Screen.Register.route) {
-                RegisterScreen()
+                RegisterScreen(
+                    viewModel = authViewModel,
+                    onRegisterSuccess = { navController.navigate(Screen.Login.route)
+                })
             }
         }
     }

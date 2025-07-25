@@ -5,14 +5,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import com.tobiaszkubiak.teamtournament.data.Group
 import com.tobiaszkubiak.teamtournament.data.User
 import com.tobiaszkubiak.teamtournament.data.UserProfile
+import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
 import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
+class AuthViewModel(
+    private val userRepository: UserRepository,
+    private val groupRepository: GroupRepository
+) : ViewModel() {
 
     private val _registrationState = MutableStateFlow<AuthState>(AuthState.Idle)
     val registrationState: StateFlow<AuthState> = _registrationState
@@ -25,6 +30,9 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
 
     private val _currentUserProfile = MutableStateFlow<UserProfile?>(null)
     val currentUserProfile: StateFlow<UserProfile?> = _currentUserProfile
+
+    private val _userGroups = MutableStateFlow<List<Group>>(emptyList())
+    val userGroups: StateFlow<List<Group>> = _userGroups
 
     fun registerUser(
         firstName: String, lastName: String, phone: String, email: String, password: String
@@ -56,7 +64,16 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
         val user = Firebase.auth.currentUser
         if (user != null) {
             viewModelScope.launch {
-                _currentUserProfile.value = userRepository.getUserProfile()
+                val profile = userRepository.getUserProfile()
+                _currentUserProfile.value = profile
+
+                profile?.stats?.memberOfGroupIds?.let { groupIds ->
+                    if (groupIds.isNotEmpty()) {
+                        _userGroups.value = groupRepository.getGroupsByIds(groupIds)
+                    } else {
+                        _userGroups.value = emptyList()
+                    }
+                }
             }
         }
     }
@@ -68,11 +85,13 @@ class AuthViewModel(private val userRepository: UserRepository) : ViewModel() {
     }
 }
 
-class AuthViewModelFactory(private val userRepository: UserRepository) : ViewModelProvider.Factory {
+class AuthViewModelFactory(
+    private val userRepository: UserRepository,
+    private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(userRepository) as T
+            return AuthViewModel(userRepository, groupRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

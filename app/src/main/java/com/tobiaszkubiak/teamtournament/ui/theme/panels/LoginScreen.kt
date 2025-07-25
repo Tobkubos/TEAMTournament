@@ -24,13 +24,10 @@ import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
 
 @Composable
 fun LoginScreen(
+    viewModel: AuthViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
-    val dataSource = remember { UserDataSource() }
-    val userRepository = remember { UserRepository(dataSource) }
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository) }
-    val viewModel: AuthViewModel = viewModel(factory = viewModelFactory)
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
