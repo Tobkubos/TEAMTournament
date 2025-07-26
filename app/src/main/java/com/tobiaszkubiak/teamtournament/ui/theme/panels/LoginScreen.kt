@@ -14,17 +14,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
-import com.tobiaszkubiak.teamtournament.data.datasources.UserDataSource
-import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthState
 import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
-import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {

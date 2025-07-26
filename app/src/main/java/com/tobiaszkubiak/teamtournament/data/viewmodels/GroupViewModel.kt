@@ -7,11 +7,14 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.tobiaszkubiak.teamtournament.data.Group
 import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class GroupViewModel(private val groupRepository: GroupRepository) : ViewModel() {
+@HiltViewModel
+class GroupViewModel @Inject constructor(private val groupRepository: GroupRepository) : ViewModel() {
 
     private val _groupCreationState = MutableStateFlow<GroupState>(GroupState.Idle)
     val groupCreationState: StateFlow<GroupState> = _groupCreationState
@@ -64,15 +67,6 @@ class GroupViewModel(private val groupRepository: GroupRepository) : ViewModel()
     }
 }
 
-class GroupViewModelFactory(private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(GroupViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return GroupViewModel(groupRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
 
 sealed class GroupState {
     object Idle : GroupState()

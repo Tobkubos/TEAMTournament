@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -27,16 +25,13 @@ import com.tobiaszkubiak.teamtournament.ui.theme.panels.SettingsScreen
 import com.tobiaszkubiak.teamtournament.ui.theme.panels.InformationScreen
 import com.tobiaszkubiak.teamtournament.ui.theme.TEAMTournamentTheme
 
-import com.tobiaszkubiak.teamtournament.data.datasources.GroupDataSource
-import com.tobiaszkubiak.teamtournament.data.datasources.UserDataSource
-import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
-import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
-import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
-import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
+
 import com.tobiaszkubiak.teamtournament.ui.controllers.Screen
 import com.tobiaszkubiak.teamtournament.ui.customElements.BottomNavigation
 import com.tobiaszkubiak.teamtournament.ui.theme.panels.GroupCreationScreen
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,16 +50,6 @@ fun MainApp(){
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-
-    val userDataSource = remember { UserDataSource() }
-    val groupDataSource = remember { GroupDataSource() }
-
-    val userRepository = remember { UserRepository(userDataSource) }
-    val groupRepository = remember { GroupRepository(groupDataSource) }
-
-    val viewModelFactory = remember { AuthViewModelFactory(userRepository,groupRepository) }
-    val authViewModel: AuthViewModel = viewModel(factory = viewModelFactory)
 
     Scaffold(
         bottomBar = {
@@ -94,7 +79,7 @@ fun MainApp(){
                 )
             }
             composable(route = Screen.Profile.route) {
-                ProfileScreen(viewModel = authViewModel)
+                ProfileScreen()
             }
             composable(route = Screen.Settings.route) {
                 SettingsScreen()
@@ -104,14 +89,12 @@ fun MainApp(){
             }
             composable(route = Screen.Login.route) {
                 LoginScreen(
-                    viewModel = authViewModel,
                     onLoginSuccess = { navController.navigate(Screen.Tournaments.route)},
                     onNavigateToRegister = { navController.navigate(Screen.Register.route)}
                 )
             }
             composable(route = Screen.Register.route) {
                 RegisterScreen(
-                    viewModel = authViewModel,
                     onRegisterSuccess = { navController.navigate(Screen.Login.route)
                 })
             }

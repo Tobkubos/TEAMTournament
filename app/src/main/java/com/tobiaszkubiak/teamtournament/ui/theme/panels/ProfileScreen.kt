@@ -9,18 +9,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.tobiaszkubiak.teamtournament.data.Group
-import com.tobiaszkubiak.teamtournament.data.UserProfile
-import com.tobiaszkubiak.teamtournament.data.datasources.UserDataSource
-import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
 import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
-import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun ProfileScreen(
-    viewModel: AuthViewModel,
+    viewModel: AuthViewModel = hiltViewModel(),
 ) {
     val userProfile by viewModel.currentUserProfile.collectAsState()
     val userGroups by viewModel.userGroups.collectAsState()

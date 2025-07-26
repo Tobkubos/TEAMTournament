@@ -25,23 +25,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tobiaszkubiak.teamtournament.data.datasources.GroupDataSource
-import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.tobiaszkubiak.teamtournament.data.viewmodels.GroupViewModel
-import com.tobiaszkubiak.teamtournament.data.viewmodels.GroupViewModelFactory
 import com.tobiaszkubiak.teamtournament.data.viewmodels.GroupState
 
 @Composable
 fun GroupCreationScreen(
     onGroupCreated: () -> Unit,
-    onGroupCreationCancel: () -> Unit
+    onGroupCreationCancel: () -> Unit,
+    viewModel: GroupViewModel = hiltViewModel()
 ){
-    val groupDataSource = remember { GroupDataSource() }
-    val groupRepository = remember { GroupRepository(groupDataSource) }
-    val viewModelFactory = remember { GroupViewModelFactory(groupRepository) }
-    val viewModel: GroupViewModel = viewModel(factory = viewModelFactory)
-    // ---------------------------------------------------------------------------
 
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }

@@ -10,11 +10,14 @@ import com.tobiaszkubiak.teamtournament.data.User
 import com.tobiaszkubiak.teamtournament.data.UserProfile
 import com.tobiaszkubiak.teamtournament.data.repository.GroupRepository
 import com.tobiaszkubiak.teamtournament.data.repository.UserRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel(
+@HiltViewModel
+class AuthViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val groupRepository: GroupRepository
 ) : ViewModel() {
@@ -85,17 +88,6 @@ class AuthViewModel(
     }
 }
 
-class AuthViewModelFactory(
-    private val userRepository: UserRepository,
-    private val groupRepository: GroupRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-            @Suppress("UNCHECKED_CAST")
-            return AuthViewModel(userRepository, groupRepository) as T
-        }
-        throw IllegalArgumentException("Unknown ViewModel class")
-    }
-}
 
 sealed class AuthState {
     object Idle : AuthState()
