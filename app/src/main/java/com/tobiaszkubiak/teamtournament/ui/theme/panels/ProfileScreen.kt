@@ -12,9 +12,12 @@ import androidx.compose.ui.unit.sp
 import com.tobiaszkubiak.teamtournament.data.Group
 import com.tobiaszkubiak.teamtournament.data.viewmodels.AuthViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.tobiaszkubiak.teamtournament.ui.customElements.GroupListItem
+import com.tobiaszkubiak.teamtournament.ui.customElements.ProfileInfoRow
 
 @Composable
 fun ProfileScreen(
+    onLogout: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel(),
 ) {
     val userProfile by viewModel.currentUserProfile.collectAsState()
@@ -46,7 +49,7 @@ fun ProfileScreen(
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     items(userGroups) { group ->
-                        GroupListItem(group = group)
+                        GroupListItem(group = group, onGroupClick = {})
                         Divider()
                     }
                 }
@@ -56,7 +59,7 @@ fun ProfileScreen(
 
             Button(onClick = {
                 viewModel.logout()
-                //onLogout()
+                onLogout()
             }) {
                 Text("Wyloguj")
             }
@@ -66,24 +69,5 @@ fun ProfileScreen(
     }
 }
 
-@Composable
-fun GroupListItem(group: Group) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = group.name, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-        Text(text = "Członków: ${group.members.size}", color = MaterialTheme.colorScheme.onSurfaceVariant)
-    }
-}
 
-@Composable
-private fun ProfileInfoRow(label: String, value: String) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        Text(text = label, modifier = Modifier.weight(1f), fontSize = 18.sp)
-        Text(text = value, modifier = Modifier.weight(2f), fontSize = 18.sp)
-    }
-    Spacer(modifier = Modifier.height(8.dp))
-}
+

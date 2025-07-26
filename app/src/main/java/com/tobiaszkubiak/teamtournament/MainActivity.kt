@@ -64,7 +64,7 @@ fun MainApp(){
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Login.route,
+            startDestination = Screen.Tournaments.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(route = Screen.Tournaments.route) {
@@ -79,7 +79,8 @@ fun MainApp(){
                 )
             }
             composable(route = Screen.Profile.route) {
-                ProfileScreen()
+                ProfileScreen(
+                    onLogout = { navController.navigate(Screen.Tournaments.route)})
             }
             composable(route = Screen.Settings.route) {
                 SettingsScreen()
